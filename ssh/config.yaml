@@ -1,17 +1,15 @@
 ---
 version: 10.5.0
-slug: ssh
-name: Terminal & SSH
-description: Allow logging in remotely to Home Assistant using SSH
-url: https://github.com/home-assistant/addons/tree/master/ssh
+slug: ssh_hardened
+name: Terminal & SSH (Hardened)
+description: Locally built Terminal & SSH with SHA-2 EtM-only MAC algorithms
+url: https://github.com/cfmanco/ha-ssh/tree/dev/ssh
 arch:
   - aarch64
-  - amd64
 audio: true
 hassio_api: true
 hassio_role: manager
 host_dbus: true
-image: homeassistant/{arch}-addon-ssh
 ingress: true
 init: false
 map:
