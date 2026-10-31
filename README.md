@@ -1,95 +1,22 @@
-# Home Assistant Apps: The official repository
+# Terminal & SSH (Hardened)
 
-Apps (formerly known as add-ons) for Home Assistant allow you to extend the functionality
-around your Home Assistant setup. These apps can consist of an application
-that Home Assistant can integrate with (e.g., a [MQTT broker](/mosquitto/README.md) or [database server](/mariadb/README.md))
-or allow access to your Home Assistant configuration (e.g., via [Samba](/samba/README.md) or using
-the [File Editor](/configurator/README.md)).
+A minimal ARM64 Home Assistant app based on the official **Terminal & SSH** image, with the SSH MAC algorithms restricted to:
 
-Apps can be installed and configured via the Home Assistant frontend on
-systems that have installed Home Assistant.
+- `hmac-sha2-512-etm@openssh.com`
+- `hmac-sha2-256-etm@openssh.com`
 
-[![Home Assistant - A project from the Open Home Foundation](https://www.openhomefoundation.org/badges/home-assistant.png)](https://www.openhomefoundation.org/)
+The Dockerfile changes `/usr/share/tempio/sshd_config`, the template from which the official app generates `/etc/ssh/sshd_config` at startup. This makes the policy survive app restarts and container recreation. If an upstream release adds its own `MACs` directive, the build stops for review rather than silently overriding it.
 
-## Apps provided by this repository
+## Upstream updates
 
-- **[CEC Scanner](/cec_scan/README.md)**
+The Dockerfile uses `homeassistant/aarch64-addon-ssh:latest`, tracking the current official ARM64 image **when the app is rebuilt with a fresh base-image pull**. The `latest` tag alone does **not** make Home Assistant rebuild or update an installed app. The `version` in `ssh/config.yaml` must be updated when publishing a new revision so the Supervisor can recognise an update. Review changes to upstream startup scripts and the SSH template before each build.
 
-    Scan & discover HDMI CEC devices and their addresses.
+## Deployment
 
-- **[deCONZ](/deconz/README.md)**
+This repository's `dev` branch is for review and local testing. To test on Home Assistant OS, check out the `dev` branch beneath the device's `/local_apps` directory, reload the app store, and install **Terminal & SSH (Hardened)**. Leave the official SSH app installed as a rollback route; avoid publishing both SSH services on the same host TCP port.
 
-    Control a Zigbee network using ConBee or RaspBee hardware by dresden elektronik.
+Once approved, merge the tested changes into the repository's default branch to serve them through the normal custom-app repository URL. The default `master` branch is not changed by work on `dev`.
 
-- **[Dnsmasq](/dnsmasq/README.md)**
+## Attribution
 
-    A simple DNS server.
-
-- **[Duck DNS](/duckdns/README.md)**
-
-    Automatically update your Duck DNS IP address with integrated HTTPS support via Let's Encrypt.
-
-- **[File editor](/configurator/README.md)**
-
-    Simple browser-based file editor for Home Assistant.
-
-- **[Git pull](/git_pull/README.md)**
-
-    Load and update configuration files for Home Assistant from a Git repository.
-
-- **[Let's Encrypt](/letsencrypt/README.md)**
-
-    Manage and create certificates from Let's Encrypt.
-
-- **[MariaDB](/mariadb/README.md)**
-
-    MariaDB database for Home Assistant.
-
-- **[Mosquitto broker](/mosquitto/README.md)**
-
-    An Open Source MQTT broker.
-
-- **[NGINX Home Assistant SSL proxy](/nginx_proxy/README.md)**
-
-    Sets up an SSL proxy with NGINX and redirects traffic from port 80 to 443.
-
-- **[RPC Shutdown](/rpc_shutdown/README.md)**
-
-    Shutdown Windows machines remotely.
-
-- **[Samba share](/samba/README.md)**
-
-    Share your configuration over the network using Windows file sharing.
-
-- **[SSH server](/ssh/README.md)**
-
-    Allow logging in remotely to Home Assistant using SSH or just the web terminal with Ingress.
-
-- **[Z-Wave JS](/zwave_js/README.md)**
-
-    Allow Home Assistant to talk to a Z-Wave Network via a USB Controller.
-
-## Support
-
-Got questions?
-
-You have several options to get them answered:
-
-- The [Home Assistant Discord Chat Server][discord].
-- The Home Assistant [Community Forum][forum].
-- Join the [Reddit subreddit][reddit] in [/r/homeassistant][reddit].
-
-In case you've found a bug, please [open an issue on our GitHub][issue].
-
-## Developing your own apps
-
-In case you are interested in developing your own app, this
-repository can be a great source of inspiration. For more information
-about developing an app, please see our
-[documentation for developers][dev-docs].
-
-[discord]: https://www.home-assistant.io/join-chat
-[forum]: https://community.home-assistant.io
-[issue]: https://github.com/home-assistant/addons/issues
-[reddit]: https://reddit.com/r/homeassistant
-[dev-docs]: https://contributors.home-assistant.io/apps/
+Derived from the official Home Assistant Terminal & SSH app. The upstream repository is [home-assistant/app-ssh](https://github.com/home-assistant/app-ssh). Retained upstream material is covered by the original Apache-2.0 `LICENSE`.
